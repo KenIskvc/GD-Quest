@@ -31,10 +31,33 @@ public class Character : MonoBehaviour
     [SerializeField]
     private LayerMask platformLayer;
 
+    [Header("Audio")]
+    [SerializeField]
+    private AudioSource footstepsSource;
+
+    [SerializeField]
+    private AudioSource sfxSource;
+
+    [SerializeField]
+    private AudioClip footstepsClip;
+
+    [SerializeField]
+    private AudioClip jumpClip;
+
+    [SerializeField]
+    private AudioClip landClip;
+
+    [SerializeField, Range(0.0f, 1.0f)]
+    private float minMoveSpeedForFootsteps = 0.1f;
+
+    [SerializeField]
+    private float minAirTimeForLandSound = 0.15f;
+
     private Vector3 characterMovement;
     private Vector3 jumpVelocity;
     private Vector3 characterGravity;
     private Vector3 platformVelocity;
+    private float airTime;
 
     void Start()
     {
@@ -42,6 +65,15 @@ public class Character : MonoBehaviour
         this.moveAction = InputSystem.actions.FindAction("Move");
         this.jumpAction = InputSystem.actions.FindAction("Jump");
         this.jumpCooldownTimer = 0.0f;
+
+        if (this.footstepsSource != null && this.footstepsClip != null)
+        {
+            this.footstepsSource.clip = this.footstepsClip;
+            this.footstepsSource.loop = true;
+            this.footstepsSource.playOnAwake = false;
+        }
+
+        this.airTime = 0.0f;
     }
 
     void HandleJumping()
@@ -59,6 +91,11 @@ public class Character : MonoBehaviour
             this.jumpVelocity.y = this.jumpSpeed;
             this.jumpCooldownTimer = this.jumpCooldown;
             this.isJumping = true;
+
+            if (this.sfxSource != null && this.jumpClip != null)
+            {
+                this.sfxSource.PlayOneShot(this.jumpClip);
+            }
         }
 
         if (this.jumpVelocity.y > 0.0f)
@@ -140,5 +177,44 @@ public class Character : MonoBehaviour
 
         var combinedMovement = this.characterMovement + this.platformVelocity * Time.fixedDeltaTime;
         this.controller.Move(combinedMovement);
+
+        this.HandleAudio(inputMovement);
+    }
+
+    /// <summary>
+    /// Quest 2 - Task 1: Play footsteps loop while moving on the ground,
+    /// and play a landing sound when the character touches ground after a jump/fall.
+    /// </summary>
+    private void HandleAudio(Vector2 inputMovement)
+    {
+        bool isGrounded = this.controller.isGrounded;
+        bool isMoving = inputMovement.sqrMagnitude > this.minMoveSpeedForFootsteps * this.minMoveSpeedForFootsteps;
+
+        if (this.footstepsSource != null)
+        {
+            bool shouldPlayFootsteps = isGrounded && isMoving && !this.isJumping;
+
+            if (shouldPlayFootsteps && !this.footstepsSource.isPlaying)
+            {
+                this.footstepsSource.Play();
+            }
+            else if (!shouldPlayFootsteps && this.footstepsSource.isPlaying)
+            {
+                this.footstepsSource.Pause();
+            }
+        }
+
+        if (!isGrounded)
+        {
+            this.airTime += Time.fixedDeltaTime;
+        }
+        else
+        {
+            if (this.airTime >= this.minAirTimeForLandSound && this.sfxSource != null && this.landClip != null)
+            {
+                this.sfxSource.PlayOneShot(this.landClip);
+            }
+            this.airTime = 0.0f;
+        }
     }
 }
