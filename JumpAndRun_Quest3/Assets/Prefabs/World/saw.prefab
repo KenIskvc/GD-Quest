@@ -63,6 +63,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fecfb1b0f497b314487acf9eb921b050, type: 3}
       insertIndex: -1
       addedObject: {fileID: -2799073307984251503}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fecfb1b0f497b314487acf9eb921b050, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8827489849671022600}
   m_SourcePrefab: {fileID: 100100000, guid: fecfb1b0f497b314487acf9eb921b050, type: 3}
 --- !u!1 &5507851934825339190 stripped
 GameObject:
@@ -84,10 +87,23 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -4219333817343177906, guid: fecfb1b0f497b314487acf9eb921b050, type: 3}
+--- !u!114 &8827489849671022600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507851934825339190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f20c8e59f54a46b4b50ca7bef478cb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SawTrap
+  damagePerSecond: 25
