@@ -51,10 +51,43 @@ public class Enemy : MonoBehaviour
     private bool isSquashed;
     private float damageCooldownTimer;
 
+    // Quest 3: remember the spawn state so the enemy can be restored on respawn.
+    private Vector3 startPosition;
+    private Quaternion startRotation;
+    private Vector3 startScale;
+
     void Start()
     {
+        this.startPosition = this.transform.position;
+        this.startRotation = this.transform.rotation;
+        this.startScale = this.transform.localScale;
+
         this.movingToB = true;
         this.isSquashed = false;
+        this.damageCooldownTimer = 0.0f;
+
+        if (this.animator != null && !string.IsNullOrEmpty(this.walkStateName))
+        {
+            this.animator.Play(this.walkStateName);
+        }
+    }
+
+    /// <summary>
+    /// Quest 3: Restore a squashed enemy to its starting position, scale and
+    /// state, and re-activate it. Called by the UIManager when the player
+    /// respawns, so the level is replayable after death.
+    /// </summary>
+    public void ResetEnemy()
+    {
+        this.transform.position = this.startPosition;
+        this.transform.rotation = this.startRotation;
+        this.transform.localScale = this.startScale;
+
+        this.movingToB = true;
+        this.isSquashed = false;
+        this.damageCooldownTimer = 0.0f;
+
+        this.gameObject.SetActive(true);
 
         if (this.animator != null && !string.IsNullOrEmpty(this.walkStateName))
         {
@@ -175,6 +208,8 @@ public class Enemy : MonoBehaviour
 
         yield return new WaitForSeconds(this.destroyDelay);
 
-        Destroy(this.gameObject);
+        // Quest 3: deactivate instead of Destroy so the enemy can be restored
+        // when the player respawns (see ResetEnemy / UIManager.Respawn).
+        this.gameObject.SetActive(false);
     }
 }

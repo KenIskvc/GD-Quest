@@ -175,6 +175,14 @@ public class UIManager : MonoBehaviour
         this.statistics.coinCounter = 0;
         this.RefreshCoinText();
 
+        // Quest 3: bring squashed enemies back so the level is replayable.
+        // Include inactive objects, since squashed enemies are deactivated.
+        Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (Enemy enemy in enemies)
+        {
+            enemy.ResetEnemy();
+        }
+
         if (this.gameOverCanvasGroup != null) this.SetCanvasHidden(this.gameOverCanvasGroup);
         if (this.hudCanvasGroup != null) this.hudCanvasGroup.alpha = 1.0f;
 
