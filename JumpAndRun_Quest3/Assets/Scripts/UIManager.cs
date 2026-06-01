@@ -67,6 +67,7 @@ public class UIManager : MonoBehaviour
 
     private PlayerStatistics statistics;
     private bool isFadingInGameOver = false;
+    private Coroutine gameOverFade;
 
     private void Awake()
     {
@@ -95,7 +96,7 @@ public class UIManager : MonoBehaviour
             // When health hits 0, fade the HUD out and GameOver in (once).
             if (percent <= 0.0f && !this.isFadingInGameOver)
             {
-                this.StartCoroutine(this.FadeInGameOver());
+                this.gameOverFade = this.StartCoroutine(this.FadeInGameOver());
             }
         }
     }
@@ -156,6 +157,14 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void Respawn()
     {
+        // Stop any in-progress GameOver fade so it can't keep overwriting the
+        // canvas alpha after we hide it (otherwise GameOver "sticks" on screen).
+        if (this.gameOverFade != null)
+        {
+            this.StopCoroutine(this.gameOverFade);
+            this.gameOverFade = null;
+        }
+
         this.MovePlayerToRespawn();
 
         if (this.character != null)
