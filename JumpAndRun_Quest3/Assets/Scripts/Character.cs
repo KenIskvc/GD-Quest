@@ -31,6 +31,12 @@ public class Character : MonoBehaviour
     [SerializeField]
     private LayerMask platformLayer;
 
+    [Header("Health")]
+    [SerializeField]
+    private float maxHealth = 100.0f;
+
+    private float currentHealth;
+
     [Header("Audio")]
     [SerializeField]
     private AudioSource footstepsSource;
@@ -62,6 +68,7 @@ public class Character : MonoBehaviour
     void Start()
     {
         this.controller = this.GetComponent<CharacterController>();
+        this.currentHealth = this.maxHealth;
         this.moveAction = InputSystem.actions.FindAction("Move");
         this.jumpAction = InputSystem.actions.FindAction("Jump");
         this.jumpCooldownTimer = 0.0f;
@@ -74,6 +81,33 @@ public class Character : MonoBehaviour
         }
 
         this.airTime = 0.0f;
+    }
+
+    /// <summary>
+    /// Quest 3: Health accessors used by the UIManager (to drive the health
+    /// bar) and by traps/enemies (to deal damage).
+    /// </summary>
+    public float GetCurrentHealth() => this.currentHealth;
+
+    public float GetMaxHealth() => this.maxHealth;
+
+    public bool IsDead() => this.currentHealth <= 0.0f;
+
+    /// <summary>
+    /// Quest 3 - Task 3: Reduce health by <paramref name="amount"/>, clamped to
+    /// [0, maxHealth]. The UIManager watches the resulting health each frame and
+    /// triggers the GameOver fade when it hits 0.
+    /// </summary>
+    public void InflictDamage(float amount)
+    {
+        this.currentHealth -= amount;
+        this.currentHealth = Mathf.Clamp(this.currentHealth, 0.0f, this.maxHealth);
+    }
+
+    /// <summary>Quest 3 - Task 1: Restore full health (called on respawn).</summary>
+    public void ResetHealth()
+    {
+        this.currentHealth = this.maxHealth;
     }
 
     void HandleJumping()
@@ -136,9 +170,17 @@ public class Character : MonoBehaviour
 
     void FixedUpdate()
     {
-        this.HandleJumping();
+        // Quest 3: When the player is dead (health <= 0), ignore all input.
+        // Gravity still runs so the body settles to the ground instead of
+        // freezing mid-air, but the player can no longer move or jump.
+        bool isDead = this.currentHealth <= 0.0f;
 
-        var inputMovement = this.moveAction.ReadValue<Vector2>();
+        if (!isDead)
+        {
+            this.HandleJumping();
+        }
+
+        var inputMovement = isDead ? Vector2.zero : this.moveAction.ReadValue<Vector2>();
 
         var inputRightDirection = this.cameraTransform.right;
         var inputForwardDirection = this.cameraTransform.forward;

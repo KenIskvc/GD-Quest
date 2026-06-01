@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &63600002
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 63600003}
+  m_Layer: 0
+  m_Name: PatrolPointA
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &63600003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 63600002}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.8723212, z: 0, w: 0.4889334}
+  m_LocalPosition: {x: 8.828, y: 0.62, z: 5.598}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -121.459, z: 0}
 --- !u!1001 &72163155
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -272,7 +303,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daead066a51b3bc41ac12bd64656af75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RespawnTrigger
-  respawnPoint: {fileID: 369801128}
 --- !u!65 &102849219
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -383,11 +413,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 544917ec80d27814287bfacae8d7cde7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  patrolDistance: 3
+  patrolPointA: {fileID: 63600003}
+  patrolPointB: {fileID: 135899822}
   patrolSpeed: 1.5
+  arriveThreshold: 0.1
   squashDuration: 0.3
   destroyDelay: 0.5
   minStompHeightOffset: 0.5
+  contactDamage: 20
+  damageInterval: 1
   sfxSource: {fileID: 107078031}
   squashClip: {fileID: 8300000, guid: 613507042e78b26449e5602698e2943e, type: 3}
   animator: {fileID: 107078033}
@@ -579,6 +613,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4821621401119843520, guid: 0fabe73a06272b44c8579c6c8d3cf47b, type: 3}
   m_PrefabInstance: {fileID: 122275776}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &135899821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 135899822}
+  m_Layer: 0
+  m_Name: PatrolPointB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &135899822
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 135899821}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.8723212, z: 0, w: 0.4889334}
+  m_LocalPosition: {x: 5.23, y: 0.62, z: 3.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -121.459, z: 0}
 --- !u!1 &148735133 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8694409513394389158, guid: 3d26229401ead09499cd034289cd42be, type: 3}
@@ -3061,6 +3126,7 @@ MonoBehaviour:
   platformLayer:
     serializedVersion: 2
     m_Bits: 8
+  health: {fileID: 0}
   footstepsSource: {fileID: 1428548644}
   sfxSource: {fileID: 1428548643}
   footstepsClip: {fileID: 8300000, guid: 030e6a43a7d08bd4581668d53a9808f4, type: 3}
@@ -8419,3 +8485,5 @@ SceneRoots:
   - {fileID: 1466860746}
   - {fileID: 844373530}
   - {fileID: 845712405}
+  - {fileID: 63600003}
+  - {fileID: 135899822}

@@ -26,6 +26,13 @@ public class Enemy : MonoBehaviour
     [SerializeField, Tooltip("How far above the enemy the player must be to count as a stomp")]
     private float minStompHeightOffset = 0.5f;
 
+    [Header("Damage")]
+    [SerializeField, Tooltip("Damage dealt to the player when touched from the side (not stomped)")]
+    private float contactDamage = 20.0f;
+
+    [SerializeField, Tooltip("Seconds before this enemy can damage the player again")]
+    private float damageInterval = 1.0f;
+
     [Header("Audio")]
     [SerializeField]
     private AudioSource sfxSource;
@@ -42,6 +49,7 @@ public class Enemy : MonoBehaviour
 
     private bool movingToB;
     private bool isSquashed;
+    private float damageCooldownTimer;
 
     void Start()
     {
@@ -56,6 +64,11 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
+        if (this.damageCooldownTimer > 0.0f)
+        {
+            this.damageCooldownTimer -= Time.deltaTime;
+        }
+
         if (this.isSquashed)
         {
             return;
@@ -89,6 +102,22 @@ public class Enemy : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        this.HandlePlayerContact(other);
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        // Keep damaging the player if they linger against the enemy's side.
+        this.HandlePlayerContact(other);
+    }
+
+    /// <summary>
+    /// Quest 3 - Task 3: If the player stomps from above, the enemy is squashed.
+    /// Otherwise the enemy damages the player (on a cooldown so it doesn't drain
+    /// health every frame of contact).
+    /// </summary>
+    private void HandlePlayerContact(Collider other)
+    {
         if (this.isSquashed)
         {
             return;
@@ -104,6 +133,22 @@ public class Enemy : MonoBehaviour
         if (playerIsAbove)
         {
             StartCoroutine(this.SquashRoutine());
+            return;
+        }
+
+        // Side contact -> hurt the player (on a cooldown so a single bump
+        // doesn't drain health every physics frame).
+        if (this.damageCooldownTimer > 0.0f)
+        {
+            return;
+        }
+
+        Character character = other.GetComponentInChildren<Character>();
+
+        if (character != null && !character.IsDead())
+        {
+            character.InflictDamage(this.contactDamage);
+            this.damageCooldownTimer = this.damageInterval;
         }
     }
 

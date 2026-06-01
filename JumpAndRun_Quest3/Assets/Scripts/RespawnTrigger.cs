@@ -1,30 +1,30 @@
 using UnityEngine;
 
+/// <summary>
+/// Quest 3 - Task 1 (last bullet): A "death zone" placed below the level.
+/// Previously this teleported the player back automatically. Now, when the
+/// player falls in, we set their health to 0 instead. The UIManager notices
+/// the 0 health on its next Update and runs the normal death flow: the
+/// GameOver canvas fades in and the HUD fades out, and the player respawns
+/// only when they press the Respawn button.
+///
+/// Put this on a large trigger collider stretched under the whole level.
+/// </summary>
 public class RespawnTrigger : MonoBehaviour
 {
-    [SerializeField]
-    private Transform respawnPoint;
-
     private void OnTriggerEnter(Collider other)
     {
-        // Try to get the CharacterController from whatever entered the trigger
-        CharacterController controller = other.gameObject.GetComponent<CharacterController>();
-
-        if (controller != null)
+        if (!other.CompareTag("Player"))
         {
-            Respawn(controller);
+            return;
         }
-    }
 
-    private void Respawn(CharacterController controller)
-    {
-        // Deactivate the CharacterController to avoid collision issues during teleport
-        controller.enabled = false;
+        Character character = other.GetComponentInChildren<Character>();
 
-        // Move the player to the respawn point
-        controller.transform.position = respawnPoint.position;
-
-        // Re-activate the CharacterController
-        controller.enabled = true;
+        if (character != null)
+        {
+            // A big hit guarantees health reaches 0 -> triggers GameOver.
+            character.InflictDamage(character.GetMaxHealth());
+        }
     }
 }
